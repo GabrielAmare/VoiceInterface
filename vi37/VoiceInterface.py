@@ -83,9 +83,9 @@ class VoiceInterface:
         except gtts.tts.gTTSError:
             raise TextToAudioError
 
-    def _speak_play_sound(self):
+    def _speak_play_sound(self, block: bool):
         try:
-            playsound.playsound(self.temp_file)
+            playsound.playsound(self.temp_file, block=block)
 
         except UnicodeDecodeError:
             raise TextToAudioError
@@ -97,10 +97,11 @@ class VoiceInterface:
             if os.path.exists(self.temp_file) and os.path.isfile(self.temp_file):
                 os.remove(self.temp_file)
 
-    def speak(self, text: str) -> None:
+    def speak(self, text: str, block: bool = True) -> None:
         """
             This method reads the given text out loud
             :param text: The text to read
+            :param block: if True, blocks the process until the end of the audio
             :return None
 
             :raise
@@ -117,9 +118,7 @@ class VoiceInterface:
 
         self._speak_save_speech(speech)
 
-        self._speak_save_speech(speech)
-
-        self._speak_play_sound()
+        self._speak_play_sound(block)
 
     def listen(self, delay=None, show_all=False) -> Union[str, List[str]]:
         """
