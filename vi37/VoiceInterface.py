@@ -3,6 +3,7 @@ import gtts
 import playsound
 import speech_recognition as sr
 from typing import Union, List
+from mutagen.mp3 import MP3
 
 
 class AudioToTextError(Exception):
@@ -97,7 +98,12 @@ class VoiceInterface:
             if os.path.exists(self.temp_file) and os.path.isfile(self.temp_file):
                 os.remove(self.temp_file)
 
-    def speak(self, text: str, block: bool = True) -> None:
+    def _speak_get_duration(self) -> float:
+        audio = MP3(self.temp_file)
+        duration = audio.info.length
+        return duration
+
+    def speak(self, text: str, block: bool = True) -> float:
         """
             This method reads the given text out loud
             :param text: The text to read
@@ -118,7 +124,11 @@ class VoiceInterface:
 
         self._speak_save_speech(speech)
 
+        duration = self._speak_get_duration()
+
         self._speak_play_sound(block)
+
+        return duration
 
     def listen(self, delay=None, show_all=False) -> Union[str, List[str]]:
         """
